@@ -3,32 +3,47 @@ import types
 import os
 from functools import partial
 
-def evaluate(lazy_value):
-    while hasattr(lazy_value, '__call__'):
-        lazy_value = lazy_value()
-    return lazy_value
-
 def integers(low=0, high=100):
-    return lambda: random.randint(low, high)
+    '''Endlessly yields random integers between (inclusively) low and high.
+       Yields low then high first to test boundary conditions.
+    '''
+    yield low
+    yield high
+    while True:
+        yield random.randint(low, high)
 
-def lists(items=integers, size=(0, 100)):
-    return lambda: [evaluate(items) \
-                    for _ in xrange(random.randint(size[0], size[1]))]
+def lists(items=integers(), size=(0, 100)):
+    '''Endlessly yields random lists varying in size between size[0]
+       and size[1]. Yields a list of the low size and the high size 
+       first to test boundary conditions.
+    '''
+    yield [items.next() for _ in xrange(size[0])]
+    yield [items.next() for _ in xrange(size[1])]
+    while True:
+        yield [items.next() for _ in xrange(random.randint(size[0], size[1]))]
 
-def dicts(items=integers, values=integers, size=(0, 100)):
-    def fun():
+def key_value_generator(keys=integers(), values=integers()):
+    while True:
+        yield [keys.next(), values.next()]
+
+def dicts(key_values=key_value_generator(), size=(0, 100)):
+    while True:
         x = {}
         for _ in xrange(random.randint(size[0], size[1])):
-            item = evaluate(items)
+            item, value = key_values.next()
             while item in x:
-                item = evaluate(items)
-            x.update({evaluate(items): evaluate(values)})
-        return x
-    return fun
+                item, value = key_values.next()
+            x.update({item: value})
+        yield x
 
 def unicodes(size=(0, 100), minunicode=0, maxunicode=255):
-    return lambda: u''.join(unichr(random.randint(minunicode, maxunicode)) \
-                            for _ in xrange(random.randint(size[0], size[1])))
+    for r in (size[0], size[1]):
+        yield u''.join(unichr(random.randint(minunicode, maxunicode)) \
+                       for _ in xrange(r))
+    while True:
+        yield u''.join(unichr(random.randint(minunicode, maxunicode)) \
+                       for _ in xrange(random.randint(size[0], size[1])))
+
 
 characters = partial(unicodes, size=(1, 1))
 
@@ -36,8 +51,8 @@ def forall(tries=100, **kwargs):
     def wrap(f):
         def wrapped():
             for _ in xrange(tries):
-                random_kwargs = (dict((name, evaluate(lazy_value)) \
-                                 for (name, lazy_value) in kwargs.iteritems()))
+                random_kwargs = (dict((name, gen.next()) \
+                                 for (name, gen) in kwargs.iteritems()))
                 if forall.verbose or os.environ.has_key('QC_VERBOSE'):
                     from pprint import pprint
                     pprint(random_kwargs)
