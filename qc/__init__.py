@@ -1,5 +1,6 @@
+# Copyright (c) 2009-2011, Dan Bravender <dan.bravender@gmail.com>
+
 import random
-import types
 import os
 from functools import partial
 
