@@ -74,3 +74,10 @@ def test_dicts_size(d):
     for x, y in d.iteritems():
         assert type(x) == unicode
         assert type(y) == list
+
+@forall(tries=10, i=integers(low=0, high=10))
+def each_integer_from_0_to_10(i, target_low, target_high):
+    assert i >= target_low and i<= target_high
+
+def test_qc_partials():
+    each_integer_from_0_to_10(target_low=0, target_high=10)

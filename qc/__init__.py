@@ -50,13 +50,14 @@ characters = partial(unicodes, size=(1, 1))
 
 def forall(tries=100, **kwargs):
     def wrap(f):
-        def wrapped():
+        def wrapped(**inkwargs):
             for _ in xrange(tries):
-                random_kwargs = (dict((name, gen.next()) \
+                random_kwargs = (dict((name, gen.next())
                                  for (name, gen) in kwargs.iteritems()))
                 if forall.verbose or os.environ.has_key('QC_VERBOSE'):
                     from pprint import pprint
                     pprint(random_kwargs)
+                random_kwargs.update(**inkwargs)
                 f(**random_kwargs)
         wrapped.__name__ = f.__name__
         return wrapped
