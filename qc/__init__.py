@@ -39,10 +39,10 @@ def dicts(key_values=key_value_generator(), size=(0, 100)):
 
 def unicodes(size=(0, 100), minunicode=0, maxunicode=255):
     for r in (size[0], size[1]):
-        yield u''.join(unichr(random.randint(minunicode, maxunicode)) \
+        yield ''.join(unichr(random.randint(minunicode, maxunicode)) \
                        for _ in xrange(r))
     while True:
-        yield u''.join(unichr(random.randint(minunicode, maxunicode)) \
+        yield ''.join(unichr(random.randint(minunicode, maxunicode)) \
                        for _ in xrange(random.randint(size[0], size[1])))
 
 
