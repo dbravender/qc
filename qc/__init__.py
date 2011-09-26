@@ -39,11 +39,11 @@ def dicts(key_values=key_value_generator(), size=(0, 100)):
 
 def unicodes(size=(0, 100), minunicode=0, maxunicode=255):
     for r in (size[0], size[1]):
-        yield ''.join(unichr(random.randint(minunicode, maxunicode)) \
-                       for _ in xrange(r))
+        yield unicode('').join(unichr(random.randint(minunicode, maxunicode)) \
+                for _ in xrange(r))
     while True:
-        yield ''.join(unichr(random.randint(minunicode, maxunicode)) \
-                       for _ in xrange(random.randint(size[0], size[1])))
+        yield unicode('').join(unichr(random.randint(minunicode, maxunicode)) \
+                for _ in xrange(random.randint(size[0], size[1])))
 
 
 characters = partial(unicodes, size=(1, 1))
