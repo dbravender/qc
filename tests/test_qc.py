@@ -1,4 +1,4 @@
-from qc import integers, unicodes, characters, lists, dicts, forall
+from qc import integers, floats, unicodes, characters, lists, tuples, dicts, forall
 
 @forall(tries=10, i=integers())
 def test_integers(i):
@@ -9,6 +9,20 @@ def test_integers(i):
 def test_a_int_list(l):
     assert type(l) == list
 
+@forall(tries=10, l=tuples(items=integers()))
+def test_a_int_tuple(l):
+    assert type(l) == tuple
+
+@forall(tries=10, i=floats())
+def test_floats(i):
+    assert type(i) == float
+    assert i >= 0.0 and i <= 100.0
+
+@forall(tries=10, l=lists(items=floats()))
+def test_a_float_list(l):
+    assert type(l) == list
+    assert reduce(lambda x,y: x and type(y) == float, l, True)
+
 @forall(tries=10, ul=lists(items=unicodes()))
 def test_unicodes_list(ul):
     assert type(ul) == list
@@ -17,6 +31,10 @@ def test_unicodes_list(ul):
 
 @forall(tries=10, l=lists(items=integers(), size=(10, 50)))
 def test_lists_size(l):
+    assert len(l) <= 50 and len(l) >= 10
+
+@forall(tries=10, l=tuples(items=integers(), size=(10, 50)))
+def test_tuples_size(l):
     assert len(l) <= 50 and len(l) >= 10
 
 @forall(tries=10, u=unicodes())
