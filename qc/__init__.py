@@ -2,7 +2,7 @@
 
 import random
 import os
-from functools import partial
+import functools
 
 def integers(low=0, high=100):
     '''Endlessly yields random integers between (inclusively) low and high.
@@ -65,10 +65,11 @@ def unicodes(size=(0, 100), minunicode=0, maxunicode=255):
                 for _ in xrange(random.randint(size[0], size[1])))
 
 
-characters = partial(unicodes, size=(1, 1))
+characters = functools.partial(unicodes, size=(1, 1))
 
 def forall(tries=100, **kwargs):
     def wrap(f):
+        @functools.wraps(f)
         def wrapped(**inkwargs):
             for _ in xrange(tries):
                 random_kwargs = (dict((name, gen.next())
@@ -78,7 +79,6 @@ def forall(tries=100, **kwargs):
                     pprint(random_kwargs)
                 random_kwargs.update(**inkwargs)
                 f(**random_kwargs)
-        wrapped.__name__ = f.__name__
         return wrapped
     return wrap
 forall.verbose = False # if enabled will print out the random test cases
