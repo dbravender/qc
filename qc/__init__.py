@@ -73,7 +73,7 @@ def objects(_object_class, _fields={}, *init_args, **init_kwargs):
     '''
     while True:
         ctor_args = [arg.next() for arg in init_args]
-        ctor_kwargs = dict([(k, v.next()) for k, v in init_kwargs.iteritems()])
+        ctor_kwargs = (dict((k, v.next()) for k, v in init_kwargs.iteritems()))
         obj = _object_class(*ctor_args, **ctor_kwargs)
         for k, v in _fields.iteritems():
             setattr(obj, k, v.next())
@@ -96,4 +96,4 @@ def forall(tries=100, **kwargs):
     return wrap
 forall.verbose = False # if enabled will print out the random test cases
 
-__all__ = ['integers', 'floats', 'lists', 'tuples', 'unicodes', 'characters', 'forall']
+__all__ = ['integers', 'floats', 'lists', 'tuples', 'unicodes', 'characters', 'objects', 'forall']

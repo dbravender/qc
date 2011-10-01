@@ -105,11 +105,10 @@ class TestClass(object):
     def __init__(self, arg):
         self.arg_from_init = arg
 
-@forall(tries=10, objs=objects(TestClass, {'an_int': integers(), 'a_float': floats()}, 42))
-def test_objects(objs):
-    for obj in objs:
-        assert type(obj) == TestClass
-        assert type(obj.an_int) == int
-        assert type(obj.a_float) == float
-        assert obj.arg_from_init == 42
+@forall(tries=10, obj=objects(TestClass, {'an_int': integers(), 'a_float': floats()}, unicodes()))
+def test_objects(obj):
+    assert type(obj) == TestClass
+    assert type(obj.an_int) == int
+    assert type(obj.a_float) == float
+    assert type(obj.arg_from_init) == unicode
 
