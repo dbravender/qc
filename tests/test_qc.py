@@ -1,4 +1,4 @@
-from qc import integers, floats, unicodes, characters, lists, tuples, dicts, forall
+from qc import integers, floats, unicodes, characters, lists, tuples, dicts, objects, forall
 
 @forall(tries=10, i=integers())
 def test_integers(i):
@@ -99,3 +99,17 @@ def each_integer_from_0_to_10(i, target_low, target_high):
 
 def test_qc_partials():
     each_integer_from_0_to_10(target_low=0, target_high=10)
+
+
+class TestClass(object):
+    def __init__(self, arg):
+        self.arg_from_init = arg
+
+@forall(tries=10, objs=objects(TestClass, {'an_int': integers(), 'a_float': floats()}, 42))
+def test_objects(objs):
+    for obj in objs:
+        assert type(obj) == TestClass
+        assert type(obj.an_int) == int
+        assert type(obj.a_float) == float
+        assert obj.arg_from_init == 42
+

@@ -64,8 +64,21 @@ def unicodes(size=(0, 100), minunicode=0, maxunicode=255):
         yield unicode('').join(unichr(random.randint(minunicode, maxunicode)) \
                 for _ in xrange(random.randint(size[0], size[1])))
 
-
 characters = functools.partial(unicodes, size=(1, 1))
+
+def objects(_object_class, _fields={}, *init_args, **init_kwargs):
+    ''' Endlessly yields objects of given class, with fields specified
+        by given dictionary. Uses given constructor arguments while creating
+        each object.
+    '''
+    while True:
+        ctor_args = [arg.next() for arg in init_args]
+        ctor_kwargs = dict([(k, v.next()) for k, v in init_kwargs.iteritems()])
+        obj = _object_class(*ctor_args, **ctor_kwargs)
+        for k, v in _fields.iteritems():
+            setattr(obj, k, v.next())
+        yield obj
+
 
 def forall(tries=100, **kwargs):
     def wrap(f):
