@@ -57,7 +57,7 @@ def test_a_tupled_list(l):
         assert type(x[0]) == int and type(x[1]) == unicode
 
 @forall(tries=10, x=integers(), y=integers())
-def test_addition_associative(x, y):
+def test_addition_commutative(x, y):
     assert x + y == y + x
 
 @forall(tries=10, l=lists())

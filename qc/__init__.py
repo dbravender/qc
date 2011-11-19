@@ -79,11 +79,10 @@ def objects(_object_class, _fields={}, *init_args, **init_kwargs):
             setattr(obj, k, v.next())
         yield obj
 
-
 def forall(tries=100, **kwargs):
     def wrap(f):
         @functools.wraps(f)
-        def wrapped(**inkwargs):
+        def wrapped(*inargs, **inkwargs):
             for _ in xrange(tries):
                 random_kwargs = (dict((name, gen.next())
                                  for (name, gen) in kwargs.iteritems()))
@@ -91,7 +90,7 @@ def forall(tries=100, **kwargs):
                     from pprint import pprint
                     pprint(random_kwargs)
                 random_kwargs.update(**inkwargs)
-                f(**random_kwargs)
+                f(*inargs, **random_kwargs)
         return wrapped
     return wrap
 forall.verbose = False # if enabled will print out the random test cases
