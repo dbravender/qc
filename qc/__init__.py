@@ -3,6 +3,7 @@
 import random
 import os
 import functools
+from copy import deepcopy
 
 
 def integers(low=0, high=100):
@@ -66,11 +67,12 @@ def dicts(key_values=key_value_generator(), size=(0, 100)):
 
 def unicodes(size=(0, 100), minunicode=0, maxunicode=255):
     for r in (size[0], size[1]):
-        yield ''.join(chr(random.randint(minunicode, maxunicode)) \
-                for _ in range(r))
+        yield ''.join(chr(random.randint(minunicode, maxunicode))
+            for _ in range(r))
     while True:
-        yield ''.join(chr(random.randint(minunicode, maxunicode)) \
-                for _ in range(random.randint(size[0], size[1])))
+        yield ''.join(chr(random.randint(minunicode, maxunicode))
+            for _ in range(random.randint(size[0], size[1])))
+
 
 characters = functools.partial(unicodes, size=(1, 1))
 
@@ -104,6 +106,32 @@ def forall(tries=100, **kwargs):
         return wrapped
     return wrap
 forall.verbose = False  # if enabled will print out the random test cases
+
+
+default_annotation_checks = {
+    int: integers,
+    float: floats,
+    list: lists,
+    tuple: tuples,
+    dict: dicts,
+    str: unicodes,
+    object: objects,
+}
+
+
+def check_annotations(f, annotation_checks=None, tries=100):
+    '''
+    Check Python 3 annotations
+    '''
+    if annotation_checks is None:
+        annotation_checks = default_annotation_checks
+    inputs = deepcopy(f.__annotations__)
+    output = inputs.pop('return', None)
+    args = {arg: annotation_checks[typ]() for arg, typ in inputs.items()}
+    print('%r' % args)
+    for _ in range(tries):
+        test_args = {arg: next(iterator) for arg, iterator in args.items()}
+        assert type(f(**test_args)) == output
 
 
 __all__ = [

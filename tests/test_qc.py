@@ -1,6 +1,6 @@
 from qc import (
     integers, floats, unicodes, characters, lists, tuples, dicts, objects,
-    forall)
+    forall, check_annotations)
 
 
 @forall(tries=10, i=integers())
@@ -137,3 +137,25 @@ def test_objects(obj):
     assert type(obj.an_int) == int
     assert type(obj.a_float) == float
     assert type(obj.arg_from_init) == str
+
+
+def breaking_my_contract(a : int) -> str:
+    return 10
+
+
+def keep_contract_no_parameters() -> str:
+    return "Hello"
+
+
+def keep_contract_multiple_parameters(a : int, b : int) -> int:
+    return a * b
+
+
+def test_annotations():
+    try:
+        check_annotations(breaking_my_contract)
+        assert False, "Broken contract not reported"
+    except AssertionError:
+        pass
+    check_annotations(keep_contract_no_parameters)
+    check_annotations(keep_contract_multiple_parameters)
