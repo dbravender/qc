@@ -27,42 +27,42 @@ def lists(items=integers(), size=(0, 100)):
        and size[1]. Yields a list of the low size and the high size
        first to test boundary conditions.
     '''
-    yield [items.next() for _ in xrange(size[0])]
-    yield [items.next() for _ in xrange(size[1])]
+    yield [next(items) for _ in range(size[0])]
+    yield [next(items) for _ in range(size[1])]
     while True:
-        yield [items.next() for _ in xrange(random.randint(size[0], size[1]))]
+        yield [next(items) for _ in range(random.randint(size[0], size[1]))]
 
 def tuples(items=integers(), size=(0, 100)):
     '''Endlessly yields random tuples varying in size between size[0]
        and size[1]. Yields a tuple of the low size and the high size
        first to test boundary conditions.
     '''
-    yield tuple([items.next() for _ in xrange(size[0])])
-    yield tuple([items.next() for _ in xrange(size[1])])
+    yield tuple([next(items) for _ in range(size[0])])
+    yield tuple([next(items) for _ in range(size[1])])
     while True:
-        yield tuple([items.next() for _ in xrange(random.randint(size[0], size[1]))])
+        yield tuple([next(items) for _ in range(random.randint(size[0], size[1]))])
 
 def key_value_generator(keys=integers(), values=integers()):
     while True:
-        yield [keys.next(), values.next()]
+        yield [next(keys), next(values)]
 
 def dicts(key_values=key_value_generator(), size=(0, 100)):
     while True:
         x = {}
-        for _ in xrange(random.randint(size[0], size[1])):
-            item, value = key_values.next()
+        for _ in range(random.randint(size[0], size[1])):
+            item, value = next(key_values)
             while item in x:
-                item, value = key_values.next()
+                item, value = next(key_values)
             x.update({item: value})
         yield x
 
 def unicodes(size=(0, 100), minunicode=0, maxunicode=255):
     for r in (size[0], size[1]):
-        yield unicode('').join(unichr(random.randint(minunicode, maxunicode)) \
-                for _ in xrange(r))
+        yield ''.join(chr(random.randint(minunicode, maxunicode)) \
+                for _ in range(r))
     while True:
-        yield unicode('').join(unichr(random.randint(minunicode, maxunicode)) \
-                for _ in xrange(random.randint(size[0], size[1])))
+        yield ''.join(chr(random.randint(minunicode, maxunicode)) \
+                for _ in range(random.randint(size[0], size[1])))
 
 characters = functools.partial(unicodes, size=(1, 1))
 
@@ -72,21 +72,21 @@ def objects(_object_class, _fields={}, *init_args, **init_kwargs):
         each object.
     '''
     while True:
-        ctor_args = [arg.next() for arg in init_args]
-        ctor_kwargs = (dict((k, v.next()) for k, v in init_kwargs.iteritems()))
+        ctor_args = [next(arg) for arg in init_args]
+        ctor_kwargs = (dict((k, next(v)) for k, v in init_kwargs.items()))
         obj = _object_class(*ctor_args, **ctor_kwargs)
-        for k, v in _fields.iteritems():
-            setattr(obj, k, v.next())
+        for k, v in _fields.items():
+            setattr(obj, k, next(v))
         yield obj
 
 def forall(tries=100, **kwargs):
     def wrap(f):
         @functools.wraps(f)
         def wrapped(*inargs, **inkwargs):
-            for _ in xrange(tries):
-                random_kwargs = (dict((name, gen.next())
-                                 for (name, gen) in kwargs.iteritems()))
-                if forall.verbose or os.environ.has_key('QC_VERBOSE'):
+            for _ in range(tries):
+                random_kwargs = (dict((name, next(gen))
+                                 for (name, gen) in kwargs.items()))
+                if forall.verbose or 'QC_VERBOSE' in os.environ:
                     from pprint import pprint
                     pprint(random_kwargs)
                 random_kwargs.update(**inkwargs)
