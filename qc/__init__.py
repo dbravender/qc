@@ -4,6 +4,7 @@ import random
 import os
 import functools
 
+
 def integers(low=0, high=100):
     '''Endlessly yields random integers between (inclusively) low and high.
        Yields low then high first to test boundary conditions.
@@ -13,6 +14,7 @@ def integers(low=0, high=100):
     while True:
         yield random.randint(low, high)
 
+
 def floats(low=0.0, high=100.0):
     '''Endlessly yields random floats between (inclusively) low and high.
        Yields low then high first to test boundary conditions.
@@ -21,6 +23,7 @@ def floats(low=0.0, high=100.0):
     yield high
     while True:
         yield random.uniform(low, high)
+
 
 def lists(items=integers(), size=(0, 100)):
     '''Endlessly yields random lists varying in size between size[0]
@@ -32,6 +35,7 @@ def lists(items=integers(), size=(0, 100)):
     while True:
         yield [next(items) for _ in range(random.randint(size[0], size[1]))]
 
+
 def tuples(items=integers(), size=(0, 100)):
     '''Endlessly yields random tuples varying in size between size[0]
        and size[1]. Yields a tuple of the low size and the high size
@@ -40,11 +44,14 @@ def tuples(items=integers(), size=(0, 100)):
     yield tuple([next(items) for _ in range(size[0])])
     yield tuple([next(items) for _ in range(size[1])])
     while True:
-        yield tuple([next(items) for _ in range(random.randint(size[0], size[1]))])
+        yield tuple([next(items)
+            for _ in range(random.randint(size[0], size[1]))])
+
 
 def key_value_generator(keys=integers(), values=integers()):
     while True:
         yield [next(keys), next(values)]
+
 
 def dicts(key_values=key_value_generator(), size=(0, 100)):
     while True:
@@ -56,6 +63,7 @@ def dicts(key_values=key_value_generator(), size=(0, 100)):
             x.update({item: value})
         yield x
 
+
 def unicodes(size=(0, 100), minunicode=0, maxunicode=255):
     for r in (size[0], size[1]):
         yield ''.join(chr(random.randint(minunicode, maxunicode)) \
@@ -65,6 +73,7 @@ def unicodes(size=(0, 100), minunicode=0, maxunicode=255):
                 for _ in range(random.randint(size[0], size[1])))
 
 characters = functools.partial(unicodes, size=(1, 1))
+
 
 def objects(_object_class, _fields={}, *init_args, **init_kwargs):
     ''' Endlessly yields objects of given class, with fields specified
@@ -78,6 +87,7 @@ def objects(_object_class, _fields={}, *init_args, **init_kwargs):
         for k, v in _fields.items():
             setattr(obj, k, next(v))
         yield obj
+
 
 def forall(tries=100, **kwargs):
     def wrap(f):
@@ -93,6 +103,9 @@ def forall(tries=100, **kwargs):
                 f(*inargs, **random_kwargs)
         return wrapped
     return wrap
-forall.verbose = False # if enabled will print out the random test cases
+forall.verbose = False  # if enabled will print out the random test cases
 
-__all__ = ['integers', 'floats', 'lists', 'tuples', 'unicodes', 'characters', 'objects', 'forall']
+
+__all__ = [
+    'integers', 'floats', 'lists', 'tuples', 'unicodes', 'characters',
+    'objects', 'forall']
