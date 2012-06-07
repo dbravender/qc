@@ -155,7 +155,9 @@ def test_annotations():
     try:
         check_annotations(breaking_my_contract)
         assert False, "Broken contract not reported"
-    except AssertionError:
-        pass
+    except AssertionError as e:
+        assert str(e) == (
+            "Was expecting breaking_my_contract to return <class 'str'> but "
+            "got <class 'int'> with these arguments: {'a': 0}")
     check_annotations(keep_contract_no_parameters)
     check_annotations(keep_contract_multiple_parameters)

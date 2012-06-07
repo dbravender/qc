@@ -128,10 +128,13 @@ def check_annotations(f, annotation_checks=None, tries=100):
     inputs = deepcopy(f.__annotations__)
     output = inputs.pop('return', None)
     args = {arg: annotation_checks[typ]() for arg, typ in inputs.items()}
-    print('%r' % args)
     for _ in range(tries):
         test_args = {arg: next(iterator) for arg, iterator in args.items()}
-        assert type(f(**test_args)) == output
+        response_type = type(f(**test_args))
+        assert response_type == output, (
+            'Was expecting %s to return %r but got %r with '
+            'these arguments: %r' % (
+                f.__name__, output, response_type, test_args))
 
 
 __all__ = [
